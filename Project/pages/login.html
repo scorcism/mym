@@ -20,11 +20,58 @@
         </div>
     </nav>
 
+    <div class="container">
+        <h1 class="my-4">Sign Up</h1>
+        <div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email address</label>
+                <input type="email" class="form-control" id="email" aria-describedby="emailHelp">
+                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password">
+            </div>
+            <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
         crossorigin="anonymous"></script>
+
+    <script>
+
+        async function postData(url = "", data = {}) {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+            return response.json(); // parses JSON response into native JavaScript objects
+        }
+
+
+        let submit = document.getElementById("submit")
+        submit.addEventListener("click", async () => {
+            let email = document.getElementById("email").value;
+            let password = document.getElementById("password").value;
+            let repo = await postData("/login", { email, password })
+
+            if (repo.success) {
+                localStorage.setItem('user', repo.message)
+                
+            } else {
+                alert(repo.message)
+            }
+
+            console.log(repo)
+
+        })
+    </script>
 </body>
 
 </html>

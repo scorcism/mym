@@ -56,13 +56,21 @@
 
 
         let submit = document.getElementById("submit")
-        submit.addEventListener("click", (() => {
+        submit.addEventListener("click", async () => {
             let email = document.getElementById("email").value
             let password = document.getElementById("password").value
 
-            console.log("submitting: ", email, password)
-
-        }))
+           let repo =  await postData("/signup",{email,password})
+            // console.log("submitting: ", email, password)
+            console.log(repo)
+            if(repo.success){
+                alert("User created, you can login in")
+                document.getElementById("email").value = ""
+                 document.getElementById("email").value = ""
+            }else{
+                alert(repo.message)
+            }
+        })
     </script>
 </body>
 
