@@ -1,0 +1,9 @@
+1) Authentication + Notes app with some features using Node/HTML/js/express/jwt/mongoose
+
+Mongo will be using Atlas.
+
+2) Working with indexDB
+
+3) Merge IndexDB and MongoDB
+
+4) Create a Chrome extension.
