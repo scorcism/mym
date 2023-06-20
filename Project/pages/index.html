@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Notes App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Navbar</a>
+        </div>
+        <div class="d-flex" role="search">
+            <a href="/login"><button class="btn btn-outline-success mx-2" type="submit">Login</button></a>
+            <a href="/signup"><button class="btn btn-outline-success mx-2" type="submit">Signup</button></a>
+        </div>
+    </nav>
+
+    <div class="mynotes container">
+
+        <h1>Add a Note</h1>
+        <div class="form">
+            <div>
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title: </label>
+                    <input type="text" class="form-control" id="title" aria-describedby="emailHelp">
+                </div>
+                <div class="mb-3">
+                    <label for="desc" class="form-label">Desc: </label>
+                    <input type="text" class="form-control" id="desc">
+                </div>
+                <!-- scorcism -->
+                <select class="form-select mb-4" aria-label="Default select example" id="type">
+                    <option selected>Choose Type</option>
+                    <option value="self">self</option>
+                    <option value="imp">imp</option>
+                    <option value="todo">todo</option>
+                </select>
+
+                <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+
+        <h1 class="my-5">Notes</h1>
+
+        <div class="row">
+
+            <div class="card mx-2 my-2" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the
+                        card's content.</p>
+                    <a href="#" class="card-link">Card link</a>
+                    <a href="#" class="card-link">Another link</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // I can use defer with the script tag 
+
+        // Example POST method implementation:
+        async function postData(url = "", data = {}) {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+            return response.json(); // parses JSON response into native JavaScript objects
+        }
+
+        const user = JSON.parse(localStorage.getItem('user'))
+
+        // If user is not Logged in
+        // if(!user || !user.token){
+        //     window.location = "/login"
+        // }
+
+        // const notes = postData("/getnotes", { token: user.token })
+
+
+        // notes.then((notes)=>{
+        //     // show all the notes
+        //     console.log("notes")
+        // })
+
+
+        // SUbmit new note
+        let submit = document.getElementById("submit")
+        submit.addEventListener("click",(()=>{
+            let title = document.getElementById("title").value
+            let desc = document.getElementById("desc").value
+            let type = document.getElementById("type").value
+
+            console.log("submitting: ", title, desc, type)
+                        
+        }))
+
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
