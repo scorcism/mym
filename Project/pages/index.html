@@ -60,6 +60,24 @@
     </div>
     <script>
         // I can use defer with the script tag 
+
+
+        // Check if index DB is present or not
+        let openRequest = indexedDB.open("store", 1);
+
+        openRequest.onupgradeneeded = function () {
+            console.log("Yes Present")
+        };
+
+        openRequest.onerror = function () {
+            console.error("Error", openRequest.error);
+        };
+
+        openRequest.onsuccess = function () {
+            let db = openRequest.result;
+            // continue working with database using db object
+        };
+
         const user = localStorage.getItem('user')
 
         if (user) {
@@ -122,11 +140,11 @@
 
         const deleteNote = async (id) => {
             // console.log(id + " id")
-            let respo = await deleteNoteData("/deletenote",{id})
-            if(respo.success){
+            let respo = await deleteNoteData("/deletenote", { id })
+            if (respo.success) {
                 alert(respo.message);
                 fetchNotes();
-            }else{
+            } else {
                 alert(respo.message)
             }
         }
@@ -163,7 +181,7 @@
             let type = document.getElementById("type").value
             let email = localStorage.getItem('user')
 
-            if(title.length < 5 || desc.length < 5 ){
+            if (title.length < 5 || desc.length < 5) {
                 alert("Title or desc length should be at least 5")
                 return
             }
@@ -173,7 +191,7 @@
             let notes = await postData2("/addnote", { title, desc, type, email })
             // console.log(notes)
             if (notes.success) {
-                alert(notes.message)    
+                alert(notes.message)
                 document.getElementById("title").value = "";
                 document.getElementById("desc").value = "";
                 fetchNotes();
