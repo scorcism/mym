@@ -37,13 +37,15 @@ dbReq.onsuccess = function (event) {
     getAndDisplayNotes(db);
 }
 
-function addStickyNote(db, message) {
+function addStickyNote(db, title, desc, type) {
     // Start a database transaction and get the notes object store
     let tx = db.transaction(['notes'], 'readwrite');
     let store = tx.objectStore('notes');
 
     // Put the sticky note into the object store
-    let note = { text: message, timestamp: Date.now() };
+    // console.log("Before");
+    // console.log(desc, title, type);
+    let note = { title: title, desc: desc, type: type, timestamp: Date.now() };
     store.add(note);
 
     // Wait for the database transaction to complete
@@ -56,7 +58,7 @@ function addStickyNote(db, message) {
 dbReq.onsuccess = function (event) {
     db = event.target.result;
     getAndDisplayNotes(db)
-    
+
     // Add some sticky notes
     // addStickyNote(db, 'Sloths are awesome!');
     // addStickyNote(db, 'Order more hibiscus tea');
@@ -65,35 +67,14 @@ dbReq.onsuccess = function (event) {
 
 function submitNote() {
     // let db = "notes"
-    let message = document.getElementById('newmessage');
-    addStickyNote(db, message.value);
-    message.value = '';
+    let title = document.getElementById('title');
+    let desc = document.getElementById('desc');
+    let type = document.getElementById('type');
+    addStickyNote(db, title.value, desc.value, type.value);
+    title.value = '';
+    desc.value = '';
+    type.value = '';
 }
-
-// // Set up an object store and transaction
-// let tx = db.transaction(['notes'], 'readonly');
-// let store = tx.objectStore('notes');
-
-// // Set up a request to get the sticky note with the key 1
-// let req = store.get(1);
-
-// // We can use the note if the request succeeds, getting it in the
-// // onsuccess handler
-// req.onsuccess = function (event) {
-//     let note = event.target.result;
-
-//     if (note) {
-//         console.log(note);
-//     } else {
-//         console.log("note 1 not found")
-//     }
-// }
-
-// // If we get an error, like that the note wasn't in the object
-// // store, we handle the error in the onerror handler
-// req.onerror = function (event) {
-//     alert('error getting note 1 ' + event.target.errorCode);
-// }
 
 function getAndDisplayNotes(db) {
     let tx = db.transaction(['notes'], 'readonly');
@@ -130,37 +111,12 @@ function displayNotes(notes) {
     let listHTML = '<ul>';
     for (let i = 0; i < notes.length; i++) {
         let note = notes[i];
-        listHTML += '<li>' + note.text + ' ' +
-            new Date(note.timestamp).toString() + '</li>';
+        console.log(note)
+        listHTML += '<li>' + note.title + ' ' +note.desc +' '  + note.type+ '</li>';
     }
 
     document.getElementById('notes').innerHTML = listHTML;
 }
-
-
-
-// We update the version of the database to 2 to trigger
-// onupgradeneeded
-
-// let dbReq = indexedDB.open('myDatabase', 2);
-// dbReq.onupgradeneeded = function (event) {
-//     db = event.target.result;
-
-//     // Create the notes object store, or retrieve that store if it
-//     // already exists.
-//     let notes;
-//     if (!db.objectStoreNames.contains('notes')) {
-//         notes = db.createObjectStore('notes', { autoIncrement: true });
-//     } else {
-//         notes = dbReq.transaction.objectStore('notes');
-//     }
-
-//     // If there isn't already a timestamp index in our notes object
-//     // store, make one so we can query notes by their timestamps
-//     if (!notes.indexNames.contains('timestamp')) {
-//         notes.createIndex('timestamp', 'timestamp');
-//     }
-// }
 
 
 
