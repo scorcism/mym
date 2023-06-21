@@ -120,7 +120,7 @@ app.post('/addnote', async (req, res) => {
         try {
             // console.log(req.body);
             // console.log(useremail);
-            let newNote = await Note.create({ title: req.body.title, desc: req.body.title, type: req.body.type, email: useremail })
+            let newNote = await Note.create({ title: req.body.title, desc: req.body.desc, type: req.body.type, email: useremail })
 
             res.status(200).json({ success: true, message: "Note added" })
 
