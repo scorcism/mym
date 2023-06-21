@@ -14,9 +14,12 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="/">Navbar</a>
         </div>
-        <div class="d-flex" role="search">
-            <a href="/login"><button class="btn btn-outline-success mx-2" type="submit">Login</button></a>
-            <a href="/signup"><button class="btn btn-outline-success mx-2" type="submit">Signup</button></a>
+        <div class="d-flex" role="search" id="auth-button">
+            <button onclick="logout()" class="btn btn-outline-success mx-2" type="submit" id="logout">Logout</button>
+            <div id="basic_auth">
+                <a href="/login"><button class="btn btn-outline-success mx-2" type="submit">Login</button></a>
+                <a href="/signup"><button class="btn btn-outline-success mx-2" type="submit">Signup</button></a>
+            </div>
         </div>
     </nav>
 
@@ -57,9 +60,19 @@
     </div>
     <script>
         // I can use defer with the script tag 
-
-
         const user = localStorage.getItem('user')
+
+        if (user) {
+            let basic_auth = document.getElementById("basic_auth");
+            basic_auth.style.display = "none"
+
+        }
+        const logout = () => {
+            localStorage.removeItem("user");
+            window.location = "/login"
+        }
+
+
         // If user is not Logged in
         if (!user) {
             window.location = "/login"
@@ -86,24 +99,48 @@
 
                 // console.log("notes -> ", notes.message)
                 notes.message.forEach(element => {
-
+                    let id = element._id;
                     let note = `
-            <div class="card mx-2 my-2" style="width: 18rem;">
-                <div class="card-body">
-                    <h5 class="card-title">${element.title}</h5>
-                    <h6 class="card-subtitle mb-2 text-body-secondary">${element.type}</h6>
-                    <p class="card-text">${element.desc}</p>
-                    <a href="#" class="card-link">${element._id}</a>
-                </div>
-            </div>
-            `
-                    
+                        <div class="card mx-2 my-2" style="width: 18rem;">
+                            <div class="card-body">
+                                <h5 class="card-title">${element.title}</h5>
+                                <h6 class="card-subtitle mb-2 text-danger">${element.type}</h6>
+                                <p class="card-text">${element.desc}</p>
+                                <a style="cursor:pointer" onclick="deleteNote('${element._id}')" class="cursor-pointer card-link text-danger font-weight-bold link">delete</a>
+                            </div>
+                        </div>
+                        `
                     noteContainer.innerHTML += note;
+
+
                 });
             })
         }
 
+
         fetchNotes();
+
+        const deleteNote = async (id) => {
+            // console.log(id + " id")
+            let respo = await deleteNoteData("/deletenote",{id})
+            if(respo.success){
+                alert(respo.message);
+                fetchNotes();
+            }else{
+                alert(respo.message)
+            }
+        }
+        async function deleteNoteData(url = "", data = {}) {
+            const response = await fetch(url, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "auth-token": localStorage.getItem("user")
+                },
+                body: JSON.stringify(data),
+            });
+            return response.json(); // parses JSON response into native JavaScript objects
+        }
 
         // SUbmit new note
 
@@ -126,14 +163,17 @@
             let type = document.getElementById("type").value
             let email = localStorage.getItem('user')
 
-            console.log("submitting: ", title, desc, type)
+            if(title.length < 5 || desc.length < 5 ){
+                alert("Title or desc length should be at least 5")
+                return
+            }
+
+            // console.log("submitting: ", title, desc, type)
 
             let notes = await postData2("/addnote", { title, desc, type, email })
-            console.log(notes)
+            // console.log(notes)
             if (notes.success) {
-                alert(notes.message)
-                
-                document.getElementById("type").value = "";
+                alert(notes.message)    
                 document.getElementById("title").value = "";
                 document.getElementById("desc").value = "";
                 fetchNotes();
@@ -142,7 +182,7 @@
             }
         })
 
-        // console.log(user)
+
 
     </script>
 

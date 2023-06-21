@@ -39,11 +39,11 @@ app.get('/getnotes', async (req, res) => {
     try {
         const data = jwt.verify(token, JWT_SECRET);
         let useremail = data.user.email;
-        console.log(useremail)
+        // console.log(useremail)
         try {
-            console.log("in try try")
+            // console.log("in try try")
             let notes = await Note.find({ email: useremail })
-            res.status(200).json({success: true, message:notes})
+            res.status(200).json({ success: true, message: notes })
         } catch (error) {
             return res.status(401).json({ success: false, message: "1Authenticate using valid token" })
         }
@@ -51,8 +51,6 @@ app.get('/getnotes', async (req, res) => {
     } catch (error) {
         return res.status(401).json({ success: false, message: "Internal server error" })
     }
-
-
 })
 
 app.post('/login', async (req, res) => {
@@ -82,7 +80,7 @@ app.post('/login', async (req, res) => {
         res.status(200).json({ success: true, message: authtoken })
 
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         return res.status(500).json({ success: false, message: "Check Credentials" });
     }
 })
@@ -136,9 +134,37 @@ app.post('/addnote', async (req, res) => {
 
 })
 
-app.get('/deletenote', (req, res) => {
+app.delete('/deletenote', async (req, res) => {
+    let token = req.header("auth-token")
+    const { id } = req.body;
+    // console.log("ID =>  " + id)
+    // console.log(token)
+    if (!token) {
+        return res.status(401).json({ success: false, message: "1Authenticate using valid token" })
+    }
+    try {
+        const data = jwt.verify(token, JWT_SECRET);
+        let useremail = data.user.email;
 
-    res.sendFile('pages/signup.html', { root: __dirname })
+        try {
+            // console.log(req.body);
+            // console.log(useremail);  
+            let user = await Note.find({ email: useremail, _id: id })
+            if (!user) {
+                return res.status(401).json({ success: false, message: "2Authenticate using valid token" })
+            }
+
+            let deleteNote = await Note.deleteOne({ email: useremail, _id: id })
+            return res.status(200).json({ success: true, message: "Note Deleted" })
+
+        } catch (error) {
+            // console.log(error)
+            return res.status(401).json({ success: false, message: "3Authenticate using valid token" })
+        }
+
+    } catch (error) {
+        return res.status(401).json({ success: false, message: "4Authenticate using valid token" })
+    }
 })
 
 

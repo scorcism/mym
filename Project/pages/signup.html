@@ -60,14 +60,27 @@
             let email = document.getElementById("email").value
             let password = document.getElementById("password").value
 
-           let repo =  await postData("/signup",{email,password})
+            const validateEmail = (email) => {
+                return String(email)
+                    .toLowerCase()
+                    .match(
+                        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                    );
+            };
+            if(validateEmail(email)){
+            }else{
+                alert("Enter valid email");
+                return;
+            }
+
+            let repo = await postData("/signup", { email, password })
             // console.log("submitting: ", email, password)
-            console.log(repo)
-            if(repo.success){
+            // console.log(repo)
+            if (repo.success) {
                 alert("User created, you can login in")
                 document.getElementById("email").value = ""
-                 document.getElementById("email").value = ""
-            }else{
+                document.getElementById("email").value = ""
+            } else {
                 alert(repo.message)
             }
         })
