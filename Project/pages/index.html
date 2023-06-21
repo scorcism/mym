@@ -49,7 +49,6 @@
         </div>
         <div id="notes"></div>
         <h1 class="my-5">Notes</h1>
-
         <div class="row mynotes mb-5">
 
 
@@ -63,13 +62,12 @@
 
         // Working with Index DB
 
-        console.log("Working")
-
-
         let db;
         let dbReq = indexedDB.open('myDatabase', 1);
+        let AllTheNotes = [];
 
         dbReq.onupgradeneeded = function (event) {
+
 
 
             // Create an object store named notes. Object stores
@@ -123,19 +121,11 @@
 
         const removeFromIDB = (id) => {
             try {
-                // dbReq.open("notes", 1).then((db) => {
-                //     const transaction = db.transaction("notes", 'readwrite');
-                //     const objectStore = transaction.objectStore("notes");
-
-                //     // Remove the document from IndexedDB
-                //     objectStore.delete(id);
-
-                //     console.log('Document removed from IndexedDB');
-                // })
                 let transaction = db.transaction(["notes"], "readwrite");
                 let request = transaction.objectStore("notes").delete(id);
             } catch (error) {
-                console.log(error)
+                alert("IndexDB error")
+                // console.log(error)
             }
         }
 
@@ -143,11 +133,6 @@
         dbReq.onsuccess = function (event) {
             db = event.target.result;
             getAndDisplayNotes(db)
-
-            // Add some sticky notes
-            // addStickyNote(db, 'Sloths are awesome!');
-            // addStickyNote(db, 'Order more hibiscus tea');
-            // addStickyNote(db, 'And Green Sheen shampoo, the best for sloth fur algae grooming!');
         }
 
         function submitNote(title, desc, type, date) {
@@ -157,7 +142,7 @@
             desc.value = '';
             type.value = '';
         }
-
+        let allINDNotes = [];
         function getAndDisplayNotes(db) {
             let tx = db.transaction(['notes'], 'readonly');
             let store = tx.objectStore('notes');
@@ -165,7 +150,7 @@
             // Create a cursor request to get all items in the store, which 
             // we collect in the allNotes array
             let req = store.openCursor();
-            let allNotes = [];
+            allINDNotes = [];
 
             req.onsuccess = function (event) {
                 // The result of req.onsuccess in openCursor requests is an
@@ -175,12 +160,12 @@
                 if (cursor != null) {
                     // If the cursor isn't null, we got an item. Add it to the
                     // the note array and have the cursor continue!
-                    allNotes.push(cursor.value);
+                    allINDNotes.push(cursor.value);
                     cursor.continue();
                 } else {
                     // If we have a null cursor, it means we've gotten
                     // all the items in the store, so display the notes we got.
-                    displayNotes(allNotes);
+                    displayNotes(allINDNotes);
                 }
             }
 
@@ -190,10 +175,20 @@
         }
 
         function displayNotes(notes) {
+
             let listHTML = '<ul>';
             for (let i = 0; i < notes.length; i++) {
                 let note = notes[i].note;
-                console.log(note)
+                let n = {
+                    title: note.title,
+                    desc: note.desc,
+                    type: note.type,
+                    id: note.id
+                }
+                AllTheNotes.push(n);
+
+
+                // console.log(note)
                 listHTML += '<li>' + note.title + ' ' + note.desc + ' ' + note.type + '</li>';
             }
 
@@ -233,14 +228,23 @@
             }
 
             const notes = postData("/getnotes")
+            console.log(typeof (notes))
 
             notes.then((notes) => {
+                console.log(notes)
                 // show all the notes
                 let noteContainer = document.querySelector(".mynotes")
                 noteContainer.innerHTML = "";
 
                 // console.log("notes -> ", notes.message)
                 notes.message.forEach(element => {
+                    let n = {
+                        title: element.title,
+                        desc: element.desc,
+                        type: element.type,
+                        id: element.id
+                    }
+                    AllTheNotes.push(n)
                     let id = element._id;
                     let note = `
                         <div class="card mx-2 my-2" style="width: 18rem;">
@@ -251,22 +255,39 @@
                                 <a style="cursor:pointer" onclick="deleteNote('${element._id}')" class="cursor-pointer card-link text-danger font-weight-bold link">delete</a>
                             </div>
                         </div>
-                        `
+                        `;
                     noteContainer.innerHTML += note;
 
 
                 });
             })
         }
-
-
+        const showNotes = () => {
+            console.log("In show notes")
+            AllTheNotes.map((element) => {
+                console.log(element.id)
+                console.log("In map")
+                let note = `
+                            <div class="card mx-2 my-2" style="width: 18rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title">${element.title}</h5>
+                                    <h6 class="card-subtitle mb-2 text-danger">${element.type}</h6>
+                                    <p class="card-text">${element.desc}</p>
+                                    <a style="cursor:pointer" onclick="deleteNote('${element._id}')" class="cursor-pointer card-link text-danger font-weight-bold link">delete</a>
+                                </div>
+                            </div>
+                            `;
+                noteContainer.innerHTML += note;
+            })
+        }
+        showNotes()
         fetchNotes();
 
         const deleteNote = async (id) => {
             // console.log(id + " id")
             let respo = await deleteNoteData("/deletenote", { id })
-            removeFromIDB(id);
             if (respo.success) {
+                removeFromIDB(id);
                 alert(respo.message);
                 fetchNotes();
             } else {
@@ -327,7 +348,7 @@
         })
 
 
-
+        console.log(AllTheNotes)
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
