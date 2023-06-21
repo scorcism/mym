@@ -109,9 +109,9 @@ app.post('/signup', async (req, res) => {
 
 app.post('/addnote', async (req, res) => {
     let token = req.header("auth-token")
-    // console.log(token)
+    console.log(req.body)
     if (!token) {
-        return res.status(401).json({ success: false, message: "Authenticate using valid token" })
+        return res.status(401).json({ success: false, message: "1Authenticate using valid token" })
     }
     try {
         const data = jwt.verify(token, JWT_SECRET);
@@ -120,16 +120,17 @@ app.post('/addnote', async (req, res) => {
         try {
             // console.log(req.body);
             // console.log(useremail);
-            let newNote = await Note.create({ title: req.body.title, desc: req.body.desc, type: req.body.type, email: useremail })
+            let newNote = await Note.create({ title: req.body.title, desc: req.body.desc, type: req.body.type, email: useremail, _id: req.body.date })
 
             res.status(200).json({ success: true, message: "Note added" })
 
         } catch (error) {
-            return res.status(401).json({ success: false, message: "Authenticate using valid token" })
+            console.log(error)
+            return res.status(401).json({ success: false, message: "2Authenticate using valid token" })
         }
 
     } catch (error) {
-        return res.status(401).json({ success: false, message: "Authenticate using valid token" })
+        return res.status(401).json({ success: false, message: "3Authenticate using valid token" })
     }
 
 })

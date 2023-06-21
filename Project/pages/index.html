@@ -47,7 +47,7 @@
                 <button id="submit" type="submit" class="btn btn-primary">Submit</button>
             </div>
         </div>
-
+        <div id="notes"></div>
         <h1 class="my-5">Notes</h1>
 
         <div class="row mynotes mb-5">
@@ -61,22 +61,146 @@
     <script>
         // I can use defer with the script tag 
 
+        // Working with Index DB
 
-        // Check if index DB is present or not
-        let openRequest = indexedDB.open("store", 1);
+        console.log("Working")
 
-        openRequest.onupgradeneeded = function () {
-            console.log("Yes Present")
-        };
 
-        openRequest.onerror = function () {
-            console.error("Error", openRequest.error);
-        };
+        let db;
+        let dbReq = indexedDB.open('myDatabase', 1);
 
-        openRequest.onsuccess = function () {
-            let db = openRequest.result;
-            // continue working with database using db object
-        };
+        dbReq.onupgradeneeded = function (event) {
+
+
+            // Create an object store named notes. Object stores
+            // in databases are where data are stored.
+            db = event.target.result;
+
+            // Create the notes object store, or retrieve that store if it
+            // already exists.
+            let notes;
+            if (!db.objectStoreNames.contains('notes')) {
+                notes = db.createObjectStore('notes', { autoIncrement: false });
+            } else {
+                notes = dbReq.transaction.objectStore('notes');
+            }
+
+            // If there isn't already a timestamp index in our notes object
+            // store, make one so we can query notes by their timestamps
+            // if (!notes.indexNames.contains('timestamp')) {
+            //     notes.createIndex('timestamp', 'timestamp');
+            // }
+        }
+
+        dbReq.onerror = function (event) {
+            alert('error opening database ' + event.target.errorCode);
+        }
+
+        dbReq.onsuccess = function (event) {
+            db = event.target.result;
+            // Once the database is ready, display the notes we already have!
+            getAndDisplayNotes(db);
+        }
+
+        function addStickyNote(db, title, desc, type, date) {
+            // Start a database transaction and get the notes object store
+            let tx = db.transaction(['notes'], 'readwrite');
+            let store = tx.objectStore('notes');
+
+            // Put the sticky note into the object store
+            // console.log("Before");
+            // console.log(desc, title, type);
+            let note = { title: title, desc: desc, type: type, id: date };
+            store.add({ note }, date);
+
+            // Wait for the database transaction to complete
+            tx.oncomplete = function () { getAndDisplayNotes(db); }
+            tx.onerror = function (event) {
+                alert('error storing note ' + event.target.errorCode);
+            }
+        }
+
+
+        const removeFromIDB = (id) => {
+            try {
+                // dbReq.open("notes", 1).then((db) => {
+                //     const transaction = db.transaction("notes", 'readwrite');
+                //     const objectStore = transaction.objectStore("notes");
+
+                //     // Remove the document from IndexedDB
+                //     objectStore.delete(id);
+
+                //     console.log('Document removed from IndexedDB');
+                // })
+                let transaction = db.transaction(["notes"], "readwrite");
+                let request = transaction.objectStore("notes").delete(id);
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+
+        dbReq.onsuccess = function (event) {
+            db = event.target.result;
+            getAndDisplayNotes(db)
+
+            // Add some sticky notes
+            // addStickyNote(db, 'Sloths are awesome!');
+            // addStickyNote(db, 'Order more hibiscus tea');
+            // addStickyNote(db, 'And Green Sheen shampoo, the best for sloth fur algae grooming!');
+        }
+
+        function submitNote(title, desc, type, date) {
+            // let db = "notes"
+            addStickyNote(db, title, desc, type, date);
+            title.value = '';
+            desc.value = '';
+            type.value = '';
+        }
+
+        function getAndDisplayNotes(db) {
+            let tx = db.transaction(['notes'], 'readonly');
+            let store = tx.objectStore('notes');
+
+            // Create a cursor request to get all items in the store, which 
+            // we collect in the allNotes array
+            let req = store.openCursor();
+            let allNotes = [];
+
+            req.onsuccess = function (event) {
+                // The result of req.onsuccess in openCursor requests is an
+                // IDBCursor
+                let cursor = event.target.result;
+
+                if (cursor != null) {
+                    // If the cursor isn't null, we got an item. Add it to the
+                    // the note array and have the cursor continue!
+                    allNotes.push(cursor.value);
+                    cursor.continue();
+                } else {
+                    // If we have a null cursor, it means we've gotten
+                    // all the items in the store, so display the notes we got.
+                    displayNotes(allNotes);
+                }
+            }
+
+            req.onerror = function (event) {
+                alert('error in cursor request ' + event.target.errorCode);
+            }
+        }
+
+        function displayNotes(notes) {
+            let listHTML = '<ul>';
+            for (let i = 0; i < notes.length; i++) {
+                let note = notes[i].note;
+                console.log(note)
+                listHTML += '<li>' + note.title + ' ' + note.desc + ' ' + note.type + '</li>';
+            }
+
+            document.getElementById('notes').innerHTML = listHTML;
+        }
+
+
 
         const user = localStorage.getItem('user')
 
@@ -141,6 +265,7 @@
         const deleteNote = async (id) => {
             // console.log(id + " id")
             let respo = await deleteNoteData("/deletenote", { id })
+            removeFromIDB(id);
             if (respo.success) {
                 alert(respo.message);
                 fetchNotes();
@@ -187,8 +312,9 @@
             }
 
             // console.log("submitting: ", title, desc, type)
-
-            let notes = await postData2("/addnote", { title, desc, type, email })
+            let date = Date.now().toString();
+            let notes = await postData2("/addnote", { title, desc, type, email, date })
+            submitNote(title, desc, type, date);
             // console.log(notes)
             if (notes.success) {
                 alert(notes.message)
