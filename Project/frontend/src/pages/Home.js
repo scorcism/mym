@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import NoteCard from "../components/NoteCard";
 
-
 const Home = () => {
 
     let URL = `http://localhost:5000`;
@@ -79,7 +78,6 @@ const Home = () => {
         setuserNotes(notes.message);
     }
 
-    
 
     useEffect(() => {
         if (!user) {
@@ -119,7 +117,7 @@ const Home = () => {
 
                     {usernotes.map((n) => {
                         return (
-                                <NoteCard n={n} />
+                            <NoteCard n={n} />
                         )
 
                     })}
