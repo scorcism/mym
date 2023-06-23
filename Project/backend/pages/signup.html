@@ -10,29 +10,29 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">Navbar</a>
+    <nav className="navbar navbar-expand-lg bg-body-tertiary">
+        <div className="container-fluid">
+            <a className="navbar-brand" href="/">Navbar</a>
         </div>
-        <div class="d-flex" role="search">
-            <a href="/login"><button class="btn btn-outline-success mx-2" type="submit">Login</button></a>
-            <a href="/signup"><button class="btn btn-outline-success mx-2" type="submit">Signup</button></a>
+        <div className="d-flex" role="search">
+            <a href="/login"><button className="btn btn-outline-success mx-2" type="submit">Login</button></a>
+            <a href="/signup"><button className="btn btn-outline-success mx-2" type="submit">Signup</button></a>
         </div>
     </nav>
 
-    <div class="container">
-        <h1 class="my-4">Sign Up</h1>
+    <div className="container">
+        <h1 className="my-4">Sign Up</h1>
         <div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="email" aria-describedby="emailHelp">
-                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            <div className="mb-3">
+                <label htmlFor="email" className="form-label">Email address</label>
+                <input type="email" className="form-control" id="email" aria-describedby="emailHelp">
+                <div id="emailHelp" className="form-text">We'll never share your email with anyone else.</div>
             </div>
-            <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password">
+            <div className="mb-3">
+                <label htmlFor="exampleInputPassword1" className="form-label">Password</label>
+                <input type="password" className="form-control" id="password">
             </div>
-            <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+            <button id="submit" type="submit" className="btn btn-primary">Submit</button>
         </div>
     </div>
 
@@ -57,8 +57,8 @@
 
         let submit = document.getElementById("submit")
         submit.addEventListener("click", async () => {
-            let email = document.getElementById("email").value;
-            let password = document.getElementById("password").value;
+            let email = document.getElementById("email").value
+            let password = document.getElementById("password").value
 
             const validateEmail = (email) => {
                 return String(email)
@@ -73,11 +73,13 @@
                 return;
             }
 
-            let repo = await postData("/login", { email, password })
-
+            let repo = await postData("/signup", { email, password })
+            // console.log("submitting: ", email, password)
+            // console.log(repo)
             if (repo.success) {
-                localStorage.setItem('user', repo.message)
-                window.location = "/"                
+                alert("User created, you can login in")
+                document.getElementById("email").value = ""
+                document.getElementById("email").value = ""
             } else {
                 alert(repo.message)
             }

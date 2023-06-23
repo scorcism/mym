@@ -1,13 +1,15 @@
 const express = require('express')
+const cors = require('cors')
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const app = express()
 const Note = require("./models/Note")
 const User = require("./models/User")
-const port = 3000
+const port = 5000
 app.use(express.json({ extended: true }))
 app.use(express.urlencoded())
+app.use(cors())
 const JWT_SECRET = "scorcimisscorcism"
 mongoose.connect('mongodb+srv://scor32k:scor32k@cluster0.cw5duyv.mongodb.net/notes').then(() => {
     console.log("connected");
@@ -18,17 +20,10 @@ mongoose.connect('mongodb+srv://scor32k:scor32k@cluster0.cw5duyv.mongodb.net/not
     })
 
 app.get('/', (req, res) => {
-    res.sendFile('pages/index.html', { root: __dirname })
+    res.send("API")
 })
 
-app.get('/login', (req, res) => {
-    res.sendFile('pages/login.html', { root: __dirname })
-})
-
-app.get('/signup', (req, res) => {
-    res.sendFile('pages/signup.html', { root: __dirname })
-})
-
+    
 // APIs endpoint
 app.get('/getnotes', async (req, res) => {
     let token = req.header("auth-token")
@@ -109,7 +104,7 @@ app.post('/signup', async (req, res) => {
 
 app.post('/addnote', async (req, res) => {
     let token = req.header("auth-token")
-    console.log(req.body)
+    // console.log(req.body)
     if (!token) {
         return res.status(401).json({ success: false, message: "1Authenticate using valid token" })
     }
@@ -125,7 +120,7 @@ app.post('/addnote', async (req, res) => {
             res.status(200).json({ success: true, message: "Note added" })
 
         } catch (error) {
-            console.log(error)
+            // console.log(error)
             return res.status(401).json({ success: false, message: "2Authenticate using valid token" })
         }
 
