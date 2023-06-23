@@ -79,6 +79,8 @@ const Home = () => {
         setuserNotes(notes.message);
     }
 
+    
+
     useEffect(() => {
         if (!user) {
             navigate("/login")
@@ -86,9 +88,6 @@ const Home = () => {
         getuserNotes();
     }, [usernotes])
 
-    // if(usernotes){
-    //     console.log(usernotes)
-    // }
     return (
         <>
             <div className="container">
