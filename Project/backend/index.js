@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors')
+const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -23,7 +24,7 @@ app.get('/', (req, res) => {
     res.send("API")
 })
 
-    
+
 // APIs endpoint
 app.get('/getnotes', async (req, res) => {
     let token = req.header("auth-token")
@@ -41,6 +42,27 @@ app.get('/getnotes', async (req, res) => {
             res.status(200).json({ success: true, message: notes })
         } catch (error) {
             return res.status(401).json({ success: false, message: "1Authenticate using valid token" })
+        }
+
+    } catch (error) {
+        return res.status(401).json({ success: false, message: "Internal server error" })
+    }
+})
+app.get('/getnotesexcpet', async (req, res) => {
+
+    try {
+
+        // console.log(useremail)
+        try {
+            
+            // console.log("in try try")
+            let notes = await Note.find({ "email": { $nin: ["hello"] } });
+
+            res.status(200).json({ success: true, message: notes })
+
+        } catch (error) {
+            console.log(error)
+            return res.status(401).json({ success: false, message: "Authenticate using valid token" })
         }
 
     } catch (error) {

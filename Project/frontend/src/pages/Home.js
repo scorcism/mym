@@ -2,19 +2,19 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import NoteCard from "../components/NoteCard";
 
-const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_';
+const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_';
 
 function generateString(length) {
     let result = '';
     const charactersLength = characters.length;
-    for ( let i = 0; i < length; i++ ) {
+    for (let i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
 }
 // let randomStr = generateString(11);
 
-let date = Date.now().toString();
+let date;
 // date = date.concat(randomStr);
 let db;
 let dbReq = indexedDB.open('myDatabase', 1);
@@ -134,6 +134,7 @@ const Home = () => {
     const [title, setTitle] = useState("");
     const [desc, setDesc] = useState("");
     const [type, setType] = useState("self");
+
     let user = localStorage.getItem("user")
 
 
@@ -175,11 +176,12 @@ const Home = () => {
     }
 
     const postData = async (url = "") => {
+
         const response = await fetch(url, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "auth-token": localStorage.getItem("user")
+                "auth-token": localStorage.getItem("user"),
             },
         });
         return response.json();
@@ -197,7 +199,12 @@ const Home = () => {
         }
         getuserNotes();
 
-    }, [usernotes])
+    }, [submit])
+
+
+    useEffect(() => {
+        date = Date.now().toString();
+    }, [submit])
 
     return (
         <>
@@ -225,7 +232,6 @@ const Home = () => {
                         <button id="submit" onClick={submit} className="btn btn-primary">Submit</button>
                     </div>
                 </div>
-                <div id="notes"></div>
                 <h1 className="my-5">Notes</h1>
                 <div className="row mb-5">
 
