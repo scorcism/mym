@@ -13,17 +13,6 @@ const Home = () => {
     const [type, setType] = useState("self");
     let user = localStorage.getItem("user")
 
-    async function postData(url = "") {
-        const response = await fetch(url, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "auth-token": localStorage.getItem("user")
-            },
-        });
-        return response.json();
-    }
-
 
     async function postData2(url = "", data = {}) {
         const response = await fetch(url, {
@@ -62,7 +51,7 @@ const Home = () => {
         }
     }
 
-    async function postData(url = "") {
+    const  postData = async (url = "")=> {
         const response = await fetch(url, {
             method: "GET",
             headers: {

@@ -3,8 +3,14 @@
   "description": "Use IT!!",
   "version": "1.0",
   "manifest_version": 3,
+   "author": "scor32k - [abhishekpathak1720@gmail.com]",  
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; script-src-elem 'self' 'unsafe-inline' https://ajax.googleapis.com https://stackpath.bootstrapcdn.com;"
+  },
   "permissions": [
-    "storage"
+    "storage",
+    "declarativeContent",
+    "tabs"
   ],
   "action": {
     "default_popup": "index.html"

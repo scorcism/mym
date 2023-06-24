@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
 
@@ -8,6 +9,7 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    let navigate = useNavigate();
 
     async function postData(url = "", data = {}) {
         const response = await fetch(url, {
@@ -35,7 +37,7 @@ const Login = () => {
             console.log(repo)
             if (repo.success) {
                 localStorage.setItem('user', repo.message)
-                window.location = "/"
+                navigate("/");
             } else {
                 alert(repo.message)
             }
