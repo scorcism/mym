@@ -51,7 +51,7 @@ const Login = () => {
     return (
         <>
             <div className="container">
-                <h1 className="my-4">Login Up</h1>
+                <h1 className="my-4">Login </h1>
                 <div>
                     <div className="mb-3">
                         <label htmlFor="email" className="form-label">Email address</label>

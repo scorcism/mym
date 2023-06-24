@@ -120,7 +120,7 @@ app.post('/addnote', async (req, res) => {
             res.status(200).json({ success: true, message: "Note added" })
 
         } catch (error) {
-            // console.log(error)
+            console.log(error)
             return res.status(401).json({ success: false, message: "2Authenticate using valid token" })
         }
 
