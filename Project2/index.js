@@ -26,8 +26,6 @@ app.get('/fetchstore', async (req, res) => {
         const result = await fetch('https://dummyjson.com/products');
         const json = await result.json();
         let products = json.products;
-        console.log(json.products);
-        console.log(typeof (json))
 
         products.map(async (item) => {
 
