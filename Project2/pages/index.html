@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index - scor32k</title>
+</head>
+
+<body>
+    <h1>Fetch and Store</h1>
+    <button class="submit" id="submit_btn">Submit</button>
+
+    <script>
+        let button = document.getElementById("submit_btn")
+        // console.log(button)
+        button.addEventListener("click", async () => {
+            const result = await fetch("/fetchstore");
+            let json = await result.json();
+            if (json.status == 1) {
+                alert(json.message)
+            } else if (json.status == 0) {
+                alert(json.message)
+            }
+        })
+    </script>
+</body>
+
+</html>
